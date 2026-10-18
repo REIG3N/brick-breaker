@@ -125,9 +125,9 @@ while running:
             game_ball.bottom = player.top
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]:
+        if keys[pygame.K_LEFT]:
             player.x -= 1000 * dt
-        if keys[pygame.K_d]:
+        if keys[pygame.K_RIGHT]:
             player.x += 1000 * dt
 
         player.clamp_ip(player_area)
