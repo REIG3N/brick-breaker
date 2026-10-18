@@ -2,6 +2,54 @@ import pygame
 
 # Niveau citrouille : 78 briques de 60 x 25, espacement de 4 px,
 # grille de 12 colonnes x 13 rangees centree a partir de x = 256, y = 40
+
+BRICK_WIDTH = 60
+BRICK_HEIGHT = 25
+BRICK_GAP = 4
+
+COLORS = {
+    "O": (255, 152, 0),    # orange
+    "B": (179, 106, 0),    # orange foncé (ombre)
+    "G": (76, 175, 80),    # tige claire
+    "D": (56, 125, 56),    # tige foncée
+}
+
+PUMPKIN = [
+    ".......GD...",
+    "......GD....",
+    ".....GD.....",
+    ".....GD.....",
+    "..OOOOOOOO..",
+    ".OBBOOOOBBO.",
+    "OO..BOOB..OB",
+    "OO...BB...OB",
+    "OOOOOOOOOOBB",
+    "O..O.OO.O..B",
+    "OO........BB",
+    "OOO......BBB",
+    ".OOOBBBBBBB.",
+]
+
+
+def build_level(grid, screen_width, top=40):
+    step_x = BRICK_WIDTH + BRICK_GAP
+    step_y = BRICK_HEIGHT + BRICK_GAP
+    grid_width = len(grid[0]) * step_x - BRICK_GAP
+    left = (screen_width - grid_width) // 2
+
+    bricks = []
+    for row_index, row in enumerate(grid):
+        for col_index, char in enumerate(row):
+            if char in COLORS:
+                rect = pygame.Rect(
+                    left + col_index * step_x,
+                    top + row_index * step_y,
+                    BRICK_WIDTH,
+                    BRICK_HEIGHT,
+                )
+                bricks.append({"rect": rect, "color": COLORS[char]})
+    return bricks
+
 bricks = [
     pygame.Rect(704, 40, 60, 25),
     pygame.Rect(768, 40, 60, 25),

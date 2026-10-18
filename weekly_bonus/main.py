@@ -1,9 +1,10 @@
 import pygame
-from levels import bricks
+from levels import PUMPKIN, build_level
 
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 1000))
+bricks = build_level(PUMPKIN, screen.get_width())
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -33,10 +34,11 @@ game_ball = pygame.FRect(
     50,
     50
 )
+game_ball.midbottom = player.midtop
+
 
 brick_length = 20
 brick_width = 60
-
 
 speed = pygame.Vector2(550, 550)
 
@@ -54,6 +56,8 @@ while running:
     if game_ball.top <= 0 :
         speed[1] = -speed[1]
     game_ball.clamp_ip(screen.get_rect())
+
+
 
 
 
@@ -81,16 +85,7 @@ while running:
             speed.from_polar((550, -50))
         else:
             speed.from_polar((550, -30))
-
-
         game_ball.bottom = player.top
-
-    pygame.draw.circle(
-        surface=screen,
-        color='blue',
-        center=game_ball.center,
-         radius=game_ball.width / 2
-    )
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
@@ -104,13 +99,23 @@ while running:
     paddle_shape.centery = screen.get_height()
     pygame.draw.ellipse(screen, "orange", paddle_shape)
 
-
     for brick in bricks:
-        pygame.draw.rect(screen, "white", brick)
+        pygame.draw.rect(screen, brick["color"], brick["rect"])
 
-    indice = game_ball.collidelist(bricks)
-    if indice != -1 :
-        brique_overlap = game_ball.clip(bricks[indice])
+    pygame.draw.circle(
+        surface=screen,
+        color='blue',
+        center=game_ball.center,
+         radius=game_ball.width / 2
+    )
+
+    brick_rects = []
+    for brick in bricks:
+        brick_rects.append(brick["rect"])
+
+    indice = game_ball.collidelist(brick_rects)
+    if indice != -1:
+        brique_overlap = game_ball.clip(brick_rects[indice])
         if brique_overlap.width > brique_overlap.height:
             speed[1] = -speed[1]
         else:
