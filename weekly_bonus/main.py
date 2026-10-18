@@ -8,8 +8,10 @@ bricks = build_level(PUMPKIN, screen.get_width())
 clock = pygame.time.Clock()
 running = True
 dt = 0
+font_big = pygame.font.Font(None, 96)
+font_small = pygame.font.Font(None, 40)
 
-DOME_WIDTH = 300
+DOME_WIDTH = 200
 DOME_HEIGHT = 60
 
 PADDLE_WIDTH = DOME_WIDTH * 0.7
@@ -31,8 +33,8 @@ player_area = pygame.FRect(
 game_ball = pygame.FRect(
     screen.get_width() / 2,
     screen.get_height() / 2,
-    50,
-    50
+    35,
+    35
 )
 game_ball.midbottom = player.midtop
 
@@ -40,89 +42,120 @@ game_ball.midbottom = player.midtop
 brick_length = 20
 brick_width = 60
 
-speed = pygame.Vector2(550, 550)
+BALL_SPEED = 800
+speed = pygame.Vector2(BALL_SPEED, BALL_SPEED)
+
+state = "menu"
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if state != "play":
+                # nouvelle partie : tout revient comme au départ
+                player.midbottom = (screen.get_width() / 2,
+                                    screen.get_height())
+                game_ball.midbottom = player.midtop
+                speed = pygame.Vector2(BALL_SPEED, BALL_SPEED)
+                bricks = build_level(PUMPKIN, screen.get_width())
+                state = "play"
+
     screen.fill("black")
 
-
-    game_ball = game_ball.move(speed[0] * dt, speed[1] * dt)
-
-    if game_ball.left <= 0 or game_ball.right >= screen.get_width():
-        speed[0] = -speed[0]
-    if game_ball.top <= 0 :
-        speed[1] = -speed[1]
-    game_ball.clamp_ip(screen.get_rect())
-
-
-
-
-
-    if game_ball.colliderect(player) and speed[1] > 0:
-
-        player_zone_1 = player.left + player.width / 7
-        player_zone_2 = player_zone_1 + player.width / 7
-        player_zone_3 = player_zone_2 + player.width / 7
-        player_zone_4 = player_zone_3 + player.width / 7
-        player_zone_5 = player_zone_4 + player.width / 7
-        player_zone_6 = player_zone_5 + player.width / 7
-
-
-        if game_ball.centerx < player_zone_1:
-            speed.from_polar((550, -150))
-        elif game_ball.centerx < player_zone_2:
-            speed.from_polar((550, -130))
-        elif game_ball.centerx < player_zone_3:
-            speed.from_polar((550, -110))
-        elif game_ball.centerx < player_zone_4:
-            speed.from_polar((550, -90))
-        elif game_ball.centerx < player_zone_5:
-            speed.from_polar((550, -70))
-        elif game_ball.centerx < player_zone_6:
-            speed.from_polar((550, -50))
+    if state == "menu":
+        title = font_big.render("PUMPKIN BREAKER", True, "orange")
+        screen.blit(title, title.get_rect(center=(640, 400)))
+        text = font_small.render("ESPACE pour jouer", True, "white")
+        screen.blit(text, text.get_rect(center=(640, 500)))
+    elif state == "game_over" or state == "win":
+        if state == "game_over":
+            title = font_big.render("GAME OVER", True, "red")
         else:
-            speed.from_polar((550, -30))
-        game_ball.bottom = player.top
+            title = font_big.render("CITROUILLE VAINCUE", True, "orange")
+        screen.blit(title, title.get_rect(center=(640, 400)))
+        text = font_small.render("ESPACE pour rejouer", True, "white")
+        screen.blit(text, text.get_rect(center=(640, 500)))
+    elif state == "play":
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_q]:
-        player.x -= 800 * dt
-    if keys[pygame.K_d]:
-        player.x += 800 * dt
-
-    player.clamp_ip(player_area)
-
-    paddle_shape.centerx = player.centerx
-    paddle_shape.centery = screen.get_height()
-    pygame.draw.ellipse(screen, "orange", paddle_shape)
-
-    for brick in bricks:
-        pygame.draw.rect(screen, brick["color"], brick["rect"])
-
-    pygame.draw.circle(
-        surface=screen,
-        color='blue',
-        center=game_ball.center,
-         radius=game_ball.width / 2
-    )
-
-    brick_rects = []
-    for brick in bricks:
-        brick_rects.append(brick["rect"])
-
-    indice = game_ball.collidelist(brick_rects)
-    if indice != -1:
-        brique_overlap = game_ball.clip(brick_rects[indice])
-        if brique_overlap.width > brique_overlap.height:
-            speed[1] = -speed[1]
-        else:
+        game_ball = game_ball.move(speed[0] * dt, speed[1] * dt)
+        if game_ball.left <= 0:
+            game_ball.left = 0
             speed[0] = -speed[0]
-        bricks.pop(indice)
+        if game_ball.right >= screen.get_width():
+            game_ball.right = screen.get_width()
+            speed[0] = -speed[0]
+        if game_ball.top <= 0:
+            game_ball.top = 0
+            speed[1] = -speed[1]
 
 
+
+        if game_ball.colliderect(player) and speed[1] > 0:
+
+            player_zone_1 = player.left + player.width / 7
+            player_zone_2 = player_zone_1 + player.width / 7
+            player_zone_3 = player_zone_2 + player.width / 7
+            player_zone_4 = player_zone_3 + player.width / 7
+            player_zone_5 = player_zone_4 + player.width / 7
+            player_zone_6 = player_zone_5 + player.width / 7
+
+
+            if game_ball.centerx < player_zone_1:
+                speed.from_polar((BALL_SPEED, -150))
+            elif game_ball.centerx < player_zone_2:
+                speed.from_polar((BALL_SPEED, -130))
+            elif game_ball.centerx < player_zone_3:
+                speed.from_polar((BALL_SPEED, -110))
+            elif game_ball.centerx < player_zone_4:
+                speed.from_polar((BALL_SPEED, -90))
+            elif game_ball.centerx < player_zone_5:
+                speed.from_polar((BALL_SPEED, -70))
+            elif game_ball.centerx < player_zone_6:
+                speed.from_polar((BALL_SPEED, -50))
+            else:
+                speed.from_polar((BALL_SPEED, -30))
+            game_ball.bottom = player.top
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_q]:
+            player.x -= 800 * dt
+        if keys[pygame.K_d]:
+            player.x += 800 * dt
+
+        player.clamp_ip(player_area)
+
+        paddle_shape.centerx = player.centerx
+        paddle_shape.centery = screen.get_height()
+        pygame.draw.ellipse(screen, "orange", paddle_shape)
+
+        for brick in bricks:
+            pygame.draw.rect(screen, brick["color"], brick["rect"])
+
+        pygame.draw.circle(
+            surface=screen,
+            color='blue',
+            center=game_ball.center,
+             radius=game_ball.width / 2
+        )
+
+        brick_rects = []
+        for brick in bricks:
+            brick_rects.append(brick["rect"])
+
+        indice = game_ball.collidelist(brick_rects)
+        if indice != -1:
+            brique_overlap = game_ball.clip(brick_rects[indice])
+            if brique_overlap.width > brique_overlap.height:
+                speed[1] = -speed[1]
+            else:
+                speed[0] = -speed[0]
+            bricks.pop(indice)
+
+        if game_ball.top > screen.get_height():
+            state = "game_over"
+        if len(bricks) == 0:
+            state = "win"
 
     # flip() the display to put your work on screen
     pygame.display.flip()
