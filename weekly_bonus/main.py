@@ -11,7 +11,7 @@ dt = 0
 font_big = pygame.font.Font(None, 96)
 font_small = pygame.font.Font(None, 40)
 
-DOME_WIDTH = 200
+DOME_WIDTH = 275
 DOME_HEIGHT = 60
 
 PADDLE_WIDTH = DOME_WIDTH * 0.7
@@ -42,8 +42,13 @@ game_ball.midbottom = player.midtop
 brick_length = 20
 brick_width = 60
 
-BALL_SPEED = 800
-speed = pygame.Vector2(BALL_SPEED, BALL_SPEED)
+START_BALL_SPEED = 800
+MAX_BALL_SPEED = 1400
+SPEED_STEP = 5
+ball_speed = START_BALL_SPEED
+
+
+speed = pygame.Vector2(ball_speed, ball_speed)
 
 state = "menu"
 
@@ -57,7 +62,7 @@ while running:
                 player.midbottom = (screen.get_width() / 2,
                                     screen.get_height())
                 game_ball.midbottom = player.midtop
-                speed = pygame.Vector2(BALL_SPEED, BALL_SPEED)
+                speed = pygame.Vector2(ball_speed, ball_speed)
                 bricks = build_level(PUMPKIN, screen.get_width())
                 state = "play"
 
@@ -68,6 +73,7 @@ while running:
         screen.blit(title, title.get_rect(center=(640, 400)))
         text = font_small.render("ESPACE pour jouer", True, "white")
         screen.blit(text, text.get_rect(center=(640, 500)))
+        ball_speed = START_BALL_SPEED
     elif state == "game_over" or state == "win":
         if state == "game_over":
             title = font_big.render("GAME OVER", True, "red")
@@ -76,6 +82,7 @@ while running:
         screen.blit(title, title.get_rect(center=(640, 400)))
         text = font_small.render("ESPACE pour rejouer", True, "white")
         screen.blit(text, text.get_rect(center=(640, 500)))
+        ball_speed = START_BALL_SPEED
     elif state == "play":
 
         game_ball = game_ball.move(speed[0] * dt, speed[1] * dt)
@@ -102,26 +109,26 @@ while running:
 
 
             if game_ball.centerx < player_zone_1:
-                speed.from_polar((BALL_SPEED, -150))
+                speed.from_polar((ball_speed, -150))
             elif game_ball.centerx < player_zone_2:
-                speed.from_polar((BALL_SPEED, -130))
+                speed.from_polar((ball_speed, -130))
             elif game_ball.centerx < player_zone_3:
-                speed.from_polar((BALL_SPEED, -110))
+                speed.from_polar((ball_speed, -110))
             elif game_ball.centerx < player_zone_4:
-                speed.from_polar((BALL_SPEED, -90))
+                speed.from_polar((ball_speed, -90))
             elif game_ball.centerx < player_zone_5:
-                speed.from_polar((BALL_SPEED, -70))
+                speed.from_polar((ball_speed, -70))
             elif game_ball.centerx < player_zone_6:
-                speed.from_polar((BALL_SPEED, -50))
+                speed.from_polar((ball_speed, -50))
             else:
-                speed.from_polar((BALL_SPEED, -30))
+                speed.from_polar((ball_speed, -30))
             game_ball.bottom = player.top
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_q]:
-            player.x -= 800 * dt
+            player.x -= 1000 * dt
         if keys[pygame.K_d]:
-            player.x += 800 * dt
+            player.x += 1000 * dt
 
         player.clamp_ip(player_area)
 
@@ -151,6 +158,8 @@ while running:
             else:
                 speed[0] = -speed[0]
             bricks.pop(indice)
+            ball_speed = min(ball_speed + SPEED_STEP, MAX_BALL_SPEED)
+            speed.scale_to_length(ball_speed)
 
         if game_ball.top > screen.get_height():
             state = "game_over"
