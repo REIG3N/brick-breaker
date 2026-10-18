@@ -6,6 +6,8 @@ la balle s'accélère et vous risquez de perdre le controle..
 
 ## Installation
 
+Prérequis (Debian / Ubuntu) : `sudo apt install python3-venv`
+
 cd weekly_bonus
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
