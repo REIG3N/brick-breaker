@@ -96,8 +96,6 @@ while running:
             game_ball.top = 0
             speed[1] = -speed[1]
 
-
-
         if game_ball.colliderect(player) and speed[1] > 0:
 
             player_zone_1 = player.left + player.width / 7
@@ -106,7 +104,6 @@ while running:
             player_zone_4 = player_zone_3 + player.width / 7
             player_zone_5 = player_zone_4 + player.width / 7
             player_zone_6 = player_zone_5 + player.width / 7
-
 
             if game_ball.centerx < player_zone_1:
                 speed.from_polar((ball_speed, -150))
@@ -143,7 +140,7 @@ while running:
             surface=screen,
             color='blue',
             center=game_ball.center,
-             radius=game_ball.width / 2
+            radius=game_ball.width / 2
         )
 
         brick_rects = []
@@ -170,4 +167,3 @@ while running:
     pygame.display.flip()
     dt = clock.tick(60) / 1000  # limits FPS to 60
 pygame.quit()
-

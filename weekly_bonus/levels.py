@@ -50,6 +50,7 @@ def build_level(grid, screen_width, top=40):
                 bricks.append({"rect": rect, "color": COLORS[char]})
     return bricks
 
+
 bricks = [
     pygame.Rect(704, 40, 60, 25),
     pygame.Rect(768, 40, 60, 25),
