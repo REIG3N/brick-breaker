@@ -48,8 +48,8 @@ SPEED_STEP = 5
 ball_speed = START_BALL_SPEED
 
 
-speed = pygame.Vector2(ball_speed, ball_speed)
-
+speed = pygame.Vector2()
+speed.from_polar((ball_speed, -60))
 state = "menu"
 
 while running:
@@ -62,7 +62,9 @@ while running:
                 player.midbottom = (screen.get_width() / 2,
                                     screen.get_height())
                 game_ball.midbottom = player.midtop
-                speed = pygame.Vector2(ball_speed, ball_speed)
+                ball_speed = START_BALL_SPEED
+                speed = pygame.Vector2()
+                speed.from_polar((ball_speed, -60))
                 bricks = build_level(PUMPKIN, screen.get_width())
                 state = "play"
 
@@ -165,5 +167,6 @@ while running:
 
     # flip() the display to put your work on screen
     pygame.display.flip()
-    dt = clock.tick(60) / 1000  # limits FPS to 60
+    # limite à 60 FPS ; dt plafonné pour éviter un saut de la balle
+    dt = min(clock.tick(60) / 1000, 0.05)
 pygame.quit()
