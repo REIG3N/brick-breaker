@@ -4,6 +4,9 @@ Brick breaker sur le thème d'Halloween, codé en Python avec pygame-ce.
 Le but est de détruire toutes les briques de la citrouille, mais attention,
 la balle s'accélère et vous risquez de perdre le controle..
 
+![Jeu](docs/game.png)
+
+
 ## Installation
 
 Prérequis (Debian / Ubuntu) : `sudo apt install python3-venv`
